@@ -44,6 +44,33 @@ script.type = "text/javascript";
 script.src = '/static/js/popcorn.js';
 document.getElementsByTagName("head")[0].appendChild(script);
 
+var hideCell = function(cell) {
+    // HACK.  See ipython/ipython#1300, ipython/ipython#1340
+    cell.element[0].style.display = "none";
+};
+
+var showCell = function(cell) {
+    // HACK.  See ipython/ipython#1300, ipython/ipython#1340
+    cell.element[0].style.display = "block";
+};
+
+var setupCues = function(popcorn) {
+    IPython.notebook.sort_cells();
+    for (var i = 0; i < IPython.notebook.ncells(); i++) {
+        var cell = IPython.notebook.get_cell(i);
+        if (cell.metadata.hasOwnProperty("popcorn_cues") &&
+            cell.metadata.popcorn_cues.hasOwnProperty("show")) {
+            var time = cell.metadata.popcorn_cues.show;
+            hideCell(cell);
+            popcorn.cue(time, (function(cell) {
+                return function() {
+                    showCell(cell);
+                }
+            })(cell));
+        }
+    }
+};
+
 var resetCells = function() {
     while (IPython.notebook.ncells() > 1) {
         IPython.notebook.delete_cell(1);
@@ -76,60 +103,8 @@ window.onload = function() {
     if (IPython.notebook.test_notebook_name('notebook casting')) {
         var pop = Popcorn("#ourvideo");
 
-        // console.log(pop);
+        setupCues(pop);
 
-        pop.cue(35, function () {
-            var target = IPython.notebook.insert_cell_at_bottom('code');
-            target.set_text("gases = ['He', 'Ne', 'Ar', 'Kr']");
-            target.execute();
-        });
-
-        pop.cue(41, function () {
-            var target = IPython.notebook.insert_cell_at_bottom('code');
-            // target = IPython.notebook.get_cell(IPython.notebook.ncells()-1);
-            target.set_text("gases[1]");
-        });
-
-        pop.cue(43, function () {
-            target = IPython.notebook.get_cell(IPython.notebook.ncells()-1);
-            target.execute();
-        });
-
-        pop.cue("00:01:09", function () {
-            var target = IPython.notebook.insert_cell_at_bottom('code');
-            // target = IPython.notebook.get_cell(IPython.notebook.ncells()-1);
-            target.set_text("gases[4]");
-        });
-
-        pop.cue("00:01:10", function () {
-            target = IPython.notebook.get_cell(IPython.notebook.ncells()-1);
-            target.execute();
-        });
-
-        pop.cue("00:01:13", function () {
-            pop.pause();
-            videoPause();
-        });
-
-        pop.cue("00:01:16", function () {
-            var target = IPython.notebook.insert_cell_at_bottom('code');
-            // target = IPython.notebook.get_cell(IPython.notebook.ncells()-1);
-            target.set_text("len(gases)");
-            target.execute();
-        });
-
-        pop.cue("00:01:24", function () {
-            var target = IPython.notebook.insert_cell_at_bottom('code');
-            // target = IPython.notebook.get_cell(IPython.notebook.ncells()-1);
-            target.set_text("etheric = []\nlen(etheric)");
-            target.execute();
-        });
-
-        pop.cue("00:01:30", function () {
-            var target = IPython.notebook.insert_cell_at_bottom('markdown');
-            target.set_rendered("<h2>This is the end of the proof of concept</h2>");
-            pop.pause();
-        });
         pop.play();
     }; //end notebook name test
 }; //end onload

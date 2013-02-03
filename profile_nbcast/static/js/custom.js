@@ -51,7 +51,7 @@ var resetCells = function() {
     var pop = Popcorn("#ourvideo");
     pop.pause();
     pop.currentTime(0);
-}
+};
 
 var videoContinue = function() {
     var pop = Popcorn("#ourvideo");
@@ -67,7 +67,7 @@ var videoPause = function () {
     var target = IPython.notebook.insert_cell_at_bottom('markdown');
     // target = IPython.notebook.get_cell(IPython.notebook.ncells()-1);
     target.set_rendered('<a href="#" onclick="videoContinue();">Continue</a>');
-}
+};
 
 window.onload = function() {
     // there should be a better way to detect when popcorn ready?
@@ -137,7 +137,7 @@ window.onload = function() {
 function popcornReady() {
     // this is called when script loaded, but before Popcorn global ready
     console.log("popcorn ready callback");
-    console.log(Popcorn);
+    //console.log(Popcorn);  // I'm getting "Popcorn not defined"
     }
 // script.onreadystatechange= function () {
     // this fires before the Popcorn object is fully loaded

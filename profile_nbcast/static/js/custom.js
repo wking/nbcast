@@ -55,7 +55,6 @@ var showCell = function(cell) {
 };
 
 var setupCues = function(popcorn) {
-    IPython.notebook.sort_cells();
     for (var i = 0; i < IPython.notebook.ncells(); i++) {
         var cell = IPython.notebook.get_cell(i);
         if (cell.metadata.hasOwnProperty("popcorn_cues") &&
